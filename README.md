@@ -1,4 +1,8 @@
-# Netanya Surf & SUP Dashboard
+# Netanya Surf & SUP
+
+**Live page:** https://cdn.jsdelivr.net/gh/golosovsky/netanya-surf-dashboard@master/index.html
+
+Repo: https://github.com/golosovsky/netanya-surf-dashboard Dashboard
 
 Ultra-minimal static web app for Eli Golosovsky’s Netanya (Israel) softboard (~7 ft) and SUP decisions.
 
