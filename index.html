@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0c1419" />
+  <meta name="description" content="Netanya surf & SUP conditions — softboard ≥60cm, SUP ≤20cm" />
+  <title>Netanya Surf & SUP</title>
+  <style>
+    :root {
+      --bg: oklch(0.16 0.02 230);
+      --bg-elev: oklch(0.20 0.025 225);
+      --bg-card: oklch(0.22 0.028 220);
+      --ink: oklch(0.93 0.01 220);
+      --muted: oklch(0.70 0.02 220);
+      --faint: oklch(0.55 0.02 220);
+      --line: oklch(0.32 0.02 220);
+      --surf: oklch(0.72 0.14 195);
+      --surf-bg: color-mix(in oklch, oklch(0.72 0.14 195) 18%, transparent);
+      --sup: oklch(0.78 0.12 145);
+      --sup-bg: color-mix(in oklch, oklch(0.78 0.12 145) 16%, transparent);
+      --neither: oklch(0.78 0.10 75);
+      --neither-bg: color-mix(in oklch, oklch(0.78 0.10 75) 14%, transparent);
+      --pad: max(1rem, env(safe-area-inset-left));
+      --pad-r: max(1rem, env(safe-area-inset-right));
+      --pad-t: max(0.75rem, env(safe-area-inset-top));
+      --pad-b: max(1.25rem, env(safe-area-inset-bottom));
+      --radius: 1.1rem;
+      --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: var(--font);
+      background:
+        radial-gradient(120% 80% at 10% -10%, oklch(0.28 0.05 210 / 0.45), transparent 55%),
+        radial-gradient(90% 60% at 100% 0%, oklch(0.25 0.04 180 / 0.35), transparent 50%),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.4;
+      padding:
+        calc(var(--pad-t) + 0.5rem)
+        var(--pad-r)
+        var(--pad-b)
+        var(--pad);
+    }
+
+    .wrap {
+      width: min(100%, 36rem);
+      margin-inline: auto;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 4.5vw, 1.7rem);
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    header .sub {
+      margin: 0.2rem 0 0;
+      color: var(--muted);
+      font-size: clamp(0.8rem, 2.8vw, 0.9rem);
+    }
+
+    .refresh {
+      flex-shrink: 0;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--bg-elev);
+      color: var(--ink);
+      font-size: 1.1rem;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .refresh:active { transform: scale(0.96); }
+    .refresh:disabled { opacity: 0.5; cursor: wait; }
+
+    .status {
+      margin: 0 0 1rem;
+      color: var(--faint);
+      font-size: 0.75rem;
+      font-family: var(--mono);
+    }
+
+    .callouts {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .callout {
+      border-radius: var(--radius);
+      padding: 1.05rem 1.15rem;
+      border: 1px solid var(--line);
+      background: var(--bg-card);
+      container-type: inline-size;
+    }
+
+    .callout .when {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--faint);
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }
+
+    .callout .msg {
+      margin: 0;
+      font-size: clamp(1.05rem, 4.2vw, 1.25rem);
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      text-wrap: balance;
+    }
+
+    .callout.surf {
+      background: linear-gradient(135deg, var(--surf-bg), var(--bg-card));
+      border-color: color-mix(in oklch, var(--surf) 35%, var(--line));
+    }
+    .callout.sup {
+      background: linear-gradient(135deg, var(--sup-bg), var(--bg-card));
+      border-color: color-mix(in oklch, var(--sup) 35%, var(--line));
+    }
+    .callout.neither {
+      background: linear-gradient(135deg, var(--neither-bg), var(--bg-card));
+      border-color: color-mix(in oklch, var(--neither) 28%, var(--line));
+    }
+
+    .callout .detail {
+      margin: 0.45rem 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .section-label {
+      margin: 0 0 0.65rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--faint);
+      font-weight: 600;
+    }
+
+    .beaches {
+      display: grid;
+      gap: 0.55rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .beach {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.35rem 0.75rem;
+      align-items: center;
+      padding: 0.9rem 1rem;
+      border-radius: calc(var(--radius) - 0.15rem);
+      background: var(--bg-elev);
+      border: 1px solid color-mix(in oklch, var(--line) 80%, transparent);
+    }
+
+    .beach .name {
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .beach .right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.25rem;
+    }
+
+    .beach .meta {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 1.75rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+    }
+    .badge.surf { background: var(--surf-bg); color: var(--surf); }
+    .badge.sup { background: var(--sup-bg); color: var(--sup); }
+    .badge.neither { background: var(--neither-bg); color: var(--neither); }
+
+    .height {
+      font-variant-numeric: tabular-nums;
+      font-weight: 650;
+      font-size: 0.95rem;
+    }
+
+    .legend {
+      margin: 0 0 1.25rem;
+      padding: 0.9rem 1rem;
+      border-radius: var(--radius);
+      background: color-mix(in oklch, var(--bg-elev) 80%, transparent);
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .legend strong { color: var(--ink); font-weight: 600; }
+
+    footer {
+      color: var(--faint);
+      font-size: 0.72rem;
+      line-height: 1.5;
+    }
+    footer a { color: var(--muted); }
+
+    .err {
+      padding: 1rem;
+      border-radius: var(--radius);
+      background: oklch(0.28 0.08 25 / 0.35);
+      border: 1px solid oklch(0.55 0.12 25 / 0.4);
+      color: oklch(0.88 0.05 40);
+      margin-bottom: 1rem;
+    }
+
+    .skeleton .callout, .skeleton .beach {
+      min-height: 4.5rem;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      50% { opacity: 0.55; }
+    }
+
+    @media (min-width: 480px) {
+      .callouts { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Netanya · Surf & SUP</h1>
+        <p class="sub">Softboard ≥ 60 cm · SUP ≤ 20 cm</p>
+      </div>
+      <button type="button" class="refresh" id="refresh" aria-label="Refresh forecast" title="Refresh">↻</button>
+    </header>
+
+    <p class="status" id="status">Loading forecast…</p>
+    <div id="error" hidden></div>
+
+    <div class="callouts" id="callouts" aria-live="polite">
+      <article class="callout"><span class="when">Today</span><p class="msg">…</p></article>
+      <article class="callout"><span class="when">Tomorrow</span><p class="msg">…</p></article>
+    </div>
+
+    <p class="section-label">Beaches · daytime</p>
+    <div class="beaches" id="beaches"></div>
+
+    <div class="legend">
+      <strong>Rule:</strong> daytime (07:00–18:00 Asia/Jerusalem) median significant wave height.
+      Surf when ≥ 60 cm · SUP when ≤ 20 cm · otherwise flat for softboard / too choppy for SUP.
+    </div>
+
+    <footer>
+      Data: Open-Meteo Marine (NCEP GFS Wave 0.16°) · cached locally when offline.
+      Heights in cm. Not a substitute for looking at the water.
+    </footer>
+  </div>
+
+  <script>
+  (() => {
+    "use strict";
+
+    /** Threshold helpers — also covered by test_thresholds.py */
+    // 10cm → SUP, 40cm → Neither, 70cm → Surf
+    const SURF_MIN_CM = 60;
+    const SUP_MAX_CM = 20;
+    const DAY_START = 7;
+    const DAY_END = 18;
+    const CACHE_KEY = "netanya-surf-cache-v1";
+    const TZ = "Asia/Jerusalem";
+
+    const BEACHES = [
+      { name: "Poleg", lat: 32.27, lon: 34.83 },
+      { name: "Sironit", lat: 32.32, lon: 34.85 },
+      { name: "Kontiki / Amphi", lat: 32.325, lon: 34.845 },
+      { name: "Herzl Beach", lat: 32.33, lon: 34.85 },
+      { name: "Blue Bay", lat: 32.35, lon: 34.86 },
+      { name: "Hasharon", lat: 32.34, lon: 34.855 },
+    ];
+
+    function recommend(cm) {
+      if (cm == null || Number.isNaN(cm)) return "Neither";
+      if (cm >= SURF_MIN_CM) return "Surf";
+      if (cm <= SUP_MAX_CM) return "SUP";
+      return "Neither";
+    }
+
+    function boardLabel(rec) {
+      return rec === "Neither" ? "Neither" : rec;
+    }
+
+    function badgeClass(rec) {
+      return rec === "Surf" ? "surf" : rec === "SUP" ? "sup" : "neither";
+    }
+
+    function median(nums) {
+      const a = [...nums].sort((x, y) => x - y);
+      const m = Math.floor(a.length / 2);
+      return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+    }
+
+    function cellKey(lat, lon) {
+      // Unique fetch key; nearby beaches often share one marine grid cell
+      return `${lat.toFixed(2)},${lon.toFixed(2)}`;
+    }
+
+    function localYMD(d = new Date()) {
+      return new Intl.DateTimeFormat("en-CA", {
+        timeZone: TZ,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(d);
+    }
+
+    function addDaysYMD(ymd, days) {
+      const [y, m, d] = ymd.split("-").map(Number);
+      const utc = Date.UTC(y, m - 1, d + days);
+      return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "UTC",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date(utc));
+    }
+
+    function compass(deg) {
+      if (deg == null) return "—";
+      const dirs = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+      return dirs[Math.round(((deg % 360) + 360) % 360 / 22.5) % 16];
+    }
+
+    function difficulty(cm, period) {
+      if (cm <= 20) return "glassy / flat";
+      if (cm < 60) return "mushy / small";
+      if (period != null && period >= 7) return "punchier";
+      return "softboard-friendly";
+    }
+
+    function daytimeStats(hourly, ymd) {
+      const heights = [];
+      const periods = [];
+      const dirs = [];
+      const winds = [];
+      for (let i = 0; i < hourly.time.length; i++) {
+        const t = hourly.time[i];
+        if (!t.startsWith(ymd)) continue;
+        const hour = Number(t.slice(11, 13));
+        if (hour < DAY_START || hour > DAY_END) continue;
+        const h = hourly.wave_height[i];
+        if (h == null) continue;
+        heights.push(h);
+        if (hourly.wave_period?.[i] != null) periods.push(hourly.wave_period[i]);
+        if (hourly.wave_direction?.[i] != null) dirs.push(hourly.wave_direction[i]);
+        if (hourly.wind_speed_10m?.[i] != null) winds.push(hourly.wind_speed_10m[i]);
+      }
+      if (!heights.length) return null;
+      const medM = median(heights);
+      const cm = Math.round(medM * 100);
+      const period = periods.length ? median(periods) : null;
+      const dir = dirs.length ? median(dirs) : null;
+      const wind = winds.length ? median(winds) : null;
+      return {
+        cm,
+        maxCm: Math.round(Math.max(...heights) * 100),
+        period,
+        dir,
+        wind,
+        rec: recommend(cm),
+      };
+    }
+
+    async function fetchMarine(lat, lon) {
+      const params = new URLSearchParams({
+        latitude: String(lat),
+        longitude: String(lon),
+        hourly: "wave_height,wave_period,wave_direction",
+        timezone: TZ,
+        forecast_days: "3",
+        models: "ncep_gfswave016",
+      });
+      const url = `https://marine-api.open-meteo.com/v1/marine?${params}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Marine API ${res.status}`);
+      return res.json();
+    }
+
+    async function fetchWind(lat, lon) {
+      const params = new URLSearchParams({
+        latitude: String(lat),
+        longitude: String(lon),
+        hourly: "wind_speed_10m,wind_direction_10m",
+        timezone: TZ,
+        forecast_days: "3",
+      });
+      const url = `https://api.open-meteo.com/v1/forecast?${params}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        return res.json();
+      } catch {
+        return null;
+      }
+    }
+
+    function mergeWind(marine, wind) {
+      if (!wind?.hourly) return marine;
+      return {
+        ...marine,
+        hourly: {
+          ...marine.hourly,
+          wind_speed_10m: wind.hourly.wind_speed_10m,
+          wind_direction_10m: wind.hourly.wind_direction_10m,
+        },
+      };
+    }
+
+    function headsUpMessage(whenLabel, rec, cm) {
+      if (rec === "Surf") {
+        return {
+          cls: "surf",
+          msg: `Heads up — ${whenLabel} is a great day for surfing`,
+          detail: `~${cm} cm daytime waves · softboard territory`,
+        };
+      }
+      if (rec === "SUP") {
+        return {
+          cls: "sup",
+          msg: `Heads up — ${whenLabel} is a great day for stand-up paddleboard`,
+          detail: `~${cm} cm · calm enough for SUP`,
+        };
+      }
+      return {
+        cls: "neither",
+        msg: `${whenLabel.charAt(0).toUpperCase() + whenLabel.slice(1)}: flat for softboard / too choppy for SUP`,
+        detail: `~${cm} cm · neither ideal`,
+      };
+    }
+
+    function saveCache(payload) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt: Date.now(), payload }));
+      } catch { /* ignore quota */ }
+    }
+
+    function loadCache() {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function render(beachDays, meta) {
+      const today = localYMD();
+      const tomorrow = addDaysYMD(today, 1);
+
+      // City-wide callout: use median across beaches for each day
+      const dayRec = (ymd) => {
+        const cms = beachDays.map((b) => b.days[ymd]?.cm).filter((x) => x != null);
+        if (!cms.length) return null;
+        const cm = Math.round(median(cms));
+        return { cm, rec: recommend(cm) };
+      };
+
+      const t = dayRec(today);
+      const tm = dayRec(tomorrow);
+      const callouts = document.getElementById("callouts");
+      callouts.innerHTML = "";
+
+      for (const [label, key, data] of [
+        ["Today", "today", t],
+        ["Tomorrow", "tomorrow", tm],
+      ]) {
+        const art = document.createElement("article");
+        if (!data) {
+          art.className = "callout neither";
+          art.innerHTML = `<span class="when">${label}</span><p class="msg">No daytime data yet</p>`;
+        } else {
+          const hu = headsUpMessage(key, data.rec, data.cm);
+          art.className = `callout ${hu.cls}`;
+          art.innerHTML = `
+            <span class="when">${label}</span>
+            <p class="msg">${hu.msg}</p>
+            <p class="detail">${hu.detail}</p>`;
+        }
+        callouts.appendChild(art);
+      }
+
+      const list = document.getElementById("beaches");
+      list.innerHTML = "";
+      for (const b of beachDays) {
+        const st = b.days[today] || b.days[tomorrow];
+        const use = b.days[today] || st;
+        const rec = use ? use.rec : "Neither";
+        const el = document.createElement("article");
+        el.className = "beach";
+        const period = use?.period != null ? `${use.period.toFixed(1)}s` : "—";
+        const wind =
+          use?.wind != null
+            ? `${Math.round(use.wind)} km/h wind`
+            : "";
+        const dir = use?.dir != null ? compass(use.dir) : "";
+        const diff = use ? difficulty(use.cm, use.period) : "";
+        const secondary = [
+          use ? `period ${period}` : null,
+          dir ? dir : null,
+          wind || null,
+          diff || null,
+        ]
+          .filter(Boolean)
+          .join(" · ");
+
+        el.innerHTML = `
+          <div class="name">${b.name}</div>
+          <div class="right">
+            <span class="badge ${badgeClass(rec)}">${boardLabel(rec)}</span>
+            <div class="height">${use ? use.cm + " cm" : "—"}</div>
+          </div>
+          <div class="meta">${secondary}${
+            b.days[today] && b.days[tomorrow]
+              ? ` · tomorrow ${b.days[tomorrow].cm} cm → ${b.days[tomorrow].rec}`
+              : ""
+          }</div>`;
+        list.appendChild(el);
+      }
+
+      const status = document.getElementById("status");
+      const age = meta.fromCache
+        ? `cached ${Math.round((Date.now() - meta.savedAt) / 60000)}m ago`
+        : "live";
+      status.textContent = `Updated ${new Date(meta.fetchedAt).toLocaleString("en-IL", {
+        timeZone: TZ,
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      })} · ${age} · grid often shared along the Netanya coast`;
+    }
+
+    async function loadAll(force = false) {
+      const btn = document.getElementById("refresh");
+      const errEl = document.getElementById("error");
+      btn.disabled = true;
+      errEl.hidden = true;
+      document.getElementById("status").textContent = "Fetching Open-Meteo…";
+
+      try {
+        const unique = new Map();
+        for (const b of BEACHES) {
+          const k = cellKey(b.lat, b.lon);
+          if (!unique.has(k)) unique.set(k, { lat: b.lat, lon: b.lon, beaches: [] });
+          unique.get(k).beaches.push(b);
+        }
+
+        const forecasts = new Map();
+        await Promise.all(
+          [...unique.entries()].map(async ([k, cell]) => {
+            const marine = await fetchMarine(cell.lat, cell.lon);
+            const wind = await fetchWind(cell.lat, cell.lon);
+            forecasts.set(k, mergeWind(marine, wind));
+          })
+        );
+
+        const today = localYMD();
+        const tomorrow = addDaysYMD(today, 1);
+        const dayAfter = addDaysYMD(today, 2);
+
+        const beachDays = BEACHES.map((b) => {
+          const data = forecasts.get(cellKey(b.lat, b.lon));
+          const days = {};
+          for (const ymd of [today, tomorrow, dayAfter]) {
+            const st = daytimeStats(data.hourly, ymd);
+            if (st) days[ymd] = st;
+          }
+          return {
+            name: b.name,
+            lat: b.lat,
+            lon: b.lon,
+            grid: { lat: data.latitude, lon: data.longitude },
+            days,
+          };
+        });
+
+        const payload = { beachDays, fetchedAt: Date.now() };
+        saveCache(payload);
+        render(beachDays, { fetchedAt: payload.fetchedAt, fromCache: false });
+      } catch (e) {
+        const cached = loadCache();
+        if (cached?.payload?.beachDays) {
+          render(cached.payload.beachDays, {
+            fetchedAt: cached.payload.fetchedAt,
+            fromCache: true,
+            savedAt: cached.savedAt,
+          });
+          errEl.hidden = false;
+          errEl.className = "err";
+          errEl.textContent = `Live fetch failed (${e.message}). Showing last good cache.`;
+        } else {
+          errEl.hidden = false;
+          errEl.className = "err";
+          errEl.textContent = `Could not load forecast: ${e.message}`;
+          document.getElementById("status").textContent = "Offline · no cache";
+        }
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    document.getElementById("refresh").addEventListener("click", () => loadAll(true));
+    loadAll();
+  })();
+  </script>
+</body>
+</html>
